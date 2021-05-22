@@ -18,6 +18,9 @@ class Server {
     this.io = socketIo(this.server, {
       /*configuraciones */
     });
+
+    // inicializar socket
+    this.sockets = new Sockets(this.io);
   }
 
   middlewares() {
@@ -25,18 +28,26 @@ class Server {
 
     // cors
     this.app.use(cors());
+
+    // get de los últimos tickets
+    this.app.get('/last', (_req, res) => {
+      res.json({
+        ok: true,
+        last: this.sockets.ticketList.last13,
+      });
+    });
   }
 
-  socketsConfig() {
-    new Sockets(this.io);
-  }
+  // socketsConfig() {
+  //   new Sockets(this.io);
+  // }
 
   execute() {
     // inicializar middlewares
     this.middlewares();
 
     // inicializar sockets
-    this.socketsConfig();
+    // this.socketsConfig();
 
     // inicializar server
     this.server.listen(this.port, () => {
